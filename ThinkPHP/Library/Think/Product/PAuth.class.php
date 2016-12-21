@@ -4,8 +4,8 @@ namespace Think\Product;
  * 权限认证类
  */
 
-class PAuth{
-
+class PAuth
+{
     /**
      * 检查权限
      * @param url string    需要验证的规则列表
@@ -73,8 +73,8 @@ class PAuth{
     }
 
     /*
-     * @param  authUrl 请求的url
-     * authIds 拥有所有权限节点的id
+     * @param   authUrl 请求的url
+     * authIds  拥有所有权限节点的id
      * 匹配
      * */
     protected function checkRoleAuth($authUrl,$authIds)
@@ -133,7 +133,6 @@ class PAuth{
         if(!$uids){
             return false;
         }
-
         $keys = explode("_" ,authcode($key,'DECODE',md5(C('ENCODE_KEY'))));
         $login_key = M('auth_user')->where('id = %d',[$uids])->find();
         $token = $login_key['login_key'];

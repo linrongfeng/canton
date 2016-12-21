@@ -1,38 +1,15 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 
 /**
 * 文件管理器
 */
-class FileManagerController extends RestController{
-	public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
+class FileManagerController extends BaseController
+{
 	//获取相关模块的目录或者文件
 	Public function GetFolder(){
-		$type=I('post.type');
-		// $number=I('post.number');
-		// $num=I('post.num');
-		// $num = (empty($num)) ? 15 : $num ;
-		// $numbers = (empty($number)) ? 0 : ($number-1)*$num ;
+		$type = I('post.type');
 		switch ($type) {
 			case 'log':
 				$url='./Public/data/';

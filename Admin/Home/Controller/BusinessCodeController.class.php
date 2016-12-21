@@ -1,15 +1,11 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 
 /**
 * 业务编码控制器
 */
-class BusinessCodeController extends RestController{
+class BusinessCodeController extends BaseController{
 	//生成业务编码接口
 	public function setBusinessCode(){
 		$code = I('post.code');

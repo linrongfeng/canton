@@ -1,45 +1,19 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
-
+use Think\Controller;
 /*
 *  产品资料模板
 */
-class TemplateController extends RestController
+class TemplateController extends BaseController
 {
-	protected $allowMethod = array('get','post','put','delete');
-    protected $defaultType = 'json';
     protected $rule_str    = "/^[a-z_A-Z()\s]+[0-9]{0,10}$/";
     protected $rule_num    = "/^[0-9]+$/";
 
-    public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
-
-    
 	public function get_template(){
 		$enabled   = strip_tags(trim(I("post.enabled")));    // 可用状态参数，默认为可用 1
 		$type_code = strip_tags(trim(I('post.type_code')));
         $pageSize  = isset($_POST['num']) ? (int)I('post.num') : 8;
         $next      = isset($_POST['next']) ? (int)I('post.next') : 1;
-
 
 		if(preg_match($this->rule_num,$enabled)){
 			$where = "enabled=".$enabled;
@@ -62,10 +36,10 @@ class TemplateController extends RestController
 			if($get_tem['error'] == 0){
 				$data['status']    = 100;
 				$data['value']     = $get_tem['value'];
-				$data['count']     = $res['count'];
-				$data['countPage'] = $res['countPage'];
-				$data['pageNow']   = $res['pageNow'];
-				$data['num']      = $res['num'];
+				$data['count']     = $get_tem['count'];
+				$data['countPage'] = $get_tem['countPage'];
+				$data['pageNow']   = $get_tem['pageNow'];
+				$data['num']      = $get_tem['num'];
 			}else{
 				$data['status'] = $get_tem['status'];
 				$data['msg']    = $get_tem['msg'];
@@ -94,7 +68,6 @@ class TemplateController extends RestController
 		}else{
 			return false;
 		}
-		
 	}
 
 	/*
@@ -156,7 +129,6 @@ class TemplateController extends RestController
 					"created_time"  	=> date("Y-m-d H:i:s",time()),
 				    "modified_time" 	=> date("Y-m-d H:i:s",time()),
 				    "status_code"  	    => 'creating',  // 创建状态
-				    
 				);
  
 			$add_tem = \Think\Product\Product_Template::add($type_code,$where);  // 添加操作
@@ -186,7 +158,6 @@ class TemplateController extends RestController
 			exit();
 		}
 		if($cname != "" && $ename != ""  && preg_match($this->rule_str,$ename)){ // 中英文、所属模板为必填字段
-
 			$where = array(
 					"cn_name"       	=> $cname,
 					"en_name"       	=> $ename,
@@ -402,20 +373,6 @@ class TemplateController extends RestController
             }
         }
         $this->response($res,'json');
-    }
-
-    public function read_excel_header(){
-
-        $t   = 'Excel5';
-        $res = read_excel('./Public/Template/aaa.xls',$t,3);
-        $r   = 0;
-        foreach ( $res as $v ) {
-            $data[] = $v;
-            $r ++;
-        }
-
-        print_r($data);
-//        $this->response($data[2],'json');
     }
 
     //获取模板信息可模糊搜索

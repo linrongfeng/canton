@@ -1,47 +1,26 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 /**
 * 获取日志控制器
 */
-class LoggingController extends RestController
+class LoggingController extends BaseController
 {
-	public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
 	/*
 	 * 获取当前月份日志
 	 */
 	public function getNowLog(){
-		$d=date('Y',time());
-        $m=date('m',time());
-        $di=$d. '/'.$m.'/';//组合日志路径
-        $value=read_file($di);
+		$d  = date('Y',time());
+        $m  = date('m',time());
+        $di = $d. '/'.$m.'/';
+        $value = read_file($di);
         if(empty($value)){
-        	$arr['status']=101;
-        	$arr['msg']="没有数据！";
+        	$arr['status'] = 101;
+        	$arr['msg'] = "没有数据！";
         }else{
-        	$arr['status']=100;
-        	$arr['value']=$value;
+        	$arr['status'] = 100;
+        	$arr['value'] = $value;
         }
-        //\Think\Log::record('this is test','INFO',true);
         $this->response($arr,'json');
 	}
 
@@ -110,7 +89,6 @@ class LoggingController extends RestController
 				$fail++;
 			}
 		}
-		
 		$arr['status']=100;
 		$arr['success']=$success;
 		$arr['fail']=$fail;
@@ -135,15 +113,11 @@ class LoggingController extends RestController
 			$download_file[]=substr($url,8);
 			$cur_file = C('LOG_PATH').$arr;
 		}
-		// print_r($url);
-		// $this->response($download_file,'json');exit();
-		// 打包下载
-		//$save_path=C('LOG_PATH').'Copy/';
-		$save_path=C('SAVE_PATH');//"http://192.168.1.42/canton/Public/data";
+		$save_path=C('SAVE_PATH');
 		if(is_dir($save_path)){
 			mkdir($save_path);
 		}
-		$scandir=new \Org\Util\traverseDir($cur_file,$save_path); //$save_path zip包文件目录
+		$scandir = new \Org\Util\traverseDir($cur_file,$save_path); //$save_path zip包文件目录
 		$a=$scandir->tozip($download_file);
 		$a=C('DOWNLOAD_URL').$a;
 		 $this->response($a,'json');exit();

@@ -280,22 +280,4 @@ class AsynController extends Controller
 		M()->execute($sql);
 		S($arr['tbl_name'].'_u',"SUCCESS");
 	}
-
-	public function tesss(){
-		$dir = "./Pictures/";
-	    if(is_dir($dir)) {
-			if ($dh = opendir($dir)){
-				while (($file = readdir($dh)) !== false){
-					if(is_dir($dir . $file)){
-						str_replace("_", " ", $file);
-						
-						echo $dir . $file."<br><hr>";
-						
-					}
-				}
-				closedir($dh);
-			}
-
-		}
-	}
 }

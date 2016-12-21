@@ -59,7 +59,6 @@ function getExcel($headArr,$data){
 \Think\Log::record("填充数据时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
     $fileName = iconv("utf-8", "gb2312", $fileName);
         //重命名表
-        //$objPHPExcel->getActiveSheet()->setTitle('test');
         //设置活动单指数到第一个表,所以Excel打开这是第一个表
         $objPHPExcel->setActiveSheetIndex(0);
         ob_clean();
@@ -68,8 +67,6 @@ function getExcel($headArr,$data){
         header('Cache-Control: max-age=0');
 
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        //$objWriter2007 = \PHPExcel_IOFactory:: createWriter($objPHPExcel, 'Excel2007');
-        //$objWriter2007->save('php://output');
         \Think\Log::record("准备下载时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
         $objWriter->save('php://output'); //文件通过浏览器下载
         exit;
@@ -157,10 +154,6 @@ function read_file($dir){
                 $arr[$i]['url']=$dir.$file;
                 $arr[$i]['name']=$file;
                 $i++;
-                // echo "<a href='".__ROOT__.$fullpath."' style='text-decoration:none;' target='_blank'>".$file ."</a></br>";
-                // }else{
-                //     echo "<b>".$fullpath."</b><br/>";
-                //     read_file($fullpath);
             }
         }
     }
@@ -177,7 +170,7 @@ function GetSysId($app_code,$num = 1){
    $arr = array();
    $sys = M("sys_sequence");
    $sql = $sys->where("app_code='".$app_code."'")->find();
-   $next_id = intval($sql['next_id']);
+   $next_id = (int)$sql['next_id'];
    $step    = $sql['step'];
    for($i = 0;$i < $num;$i ++){
        $arr[] = $next_id;
@@ -318,163 +311,6 @@ function doRequest($url, $param=array())
     }
 }
 
-//// 普通递归
-//function normalDg($arr,$pid = 0){
-//    $a = array();
-//    foreach($arr as $v){
-//        if($v['parent_id'] == $pid){
-//            $v['son'] = normalDg($arr ,$v['product_id']);
-//            $a[] = $v;
-//        }
-//    }
-//    return $a;
-//}
-
-//生成批量表
-function setExcel($type,$form_id,$fileName,$headers,$data){
-    \Think\Log::record("开始进入方法时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
-    set_time_limit(0);
-    import("Org.Util.PHPExcel");
-    import("Org.Util.PHPExcel.Writer.Excel5");
-    import("Org.Util.PHPExcel.Writer.Excel2007");
-    import("Org.Util.PHPExcel.IOFactory.php");
-
-
-    if(!is_dir("./Public/Template/Data/")){
-        mkdir("./Public/Template/Data/");
-    }
-
-    $date=date('Y-m-d-H-i-s',time());
-    if($type=='xls'){
-        $objReader = PHPExcel_IOFactory::createReader('Excel5');
-    }else{
-        $objReader = PHPExcel_IOFactory::createReader('Excel2007');
-    }
-    $objPHPExcel = $objReader->load($fileName);
-    //$currentSheet = $objPHPExcel->getSheet('Template');
-    $arr=$objPHPExcel->getSheetNames();//获取所有sheet的名称
-    $a=array_search(C('EXCEL_TEMPLATE_NAME'),$arr);//获取‘Template’的页码
-    $objPHPExcel->setActiveSheetIndex($a);//设置当前页的为‘Template’的页
-    \Think\Log::record("打开EXCEL时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
-    $i=0;
-    foreach ($headers as $key => $value) {
-        if ($i < 26) {
-            $colum = chr(65 + $i);
-        } elseif ($i < 702) {
-            $colum = chr(64 + ($i / 26)) .
-                chr(65 + $i % 26);
-        } else {
-            $colum = chr(64 + (($i - 26) / 676)) .
-                chr(65 + ((($i - 26) % 676) / 26)) .
-                chr(65 + $i % 26);
-        }
-        $array[$value]=$colum;
-        $objPHPExcel->getActiveSheet()->getStyle($colum)->getAlignment()->setHorizontal( PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-        $objPHPExcel->getActiveSheet()->getColumnDimension($colum)->setAutoSize(true);//依据其内容自动调节大小
-        $i++;
-    }
-    unset ($headers);
-    \Think\Log::record("数据开始填充时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
-    //return ($array);exit();
-    // $cacheMethod=PHPExcel_CachedObjectStorageFactory::cache_in_memory_gzip;
-    // PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
-    $i=4;
-    $objActSheet = $objPHPExcel->getActiveSheet();
-    foreach ($data as $k => $values) {
-        foreach ($values as $kes => $va) {
-            // foreach ($array as $ke => $v) {
-            //     if($kes==$ke){
-            //         if(empty($va['name'])){
-            //             if(!empty($va['virtual'])){
-            //                 $objValidation = $objPHPExcel->getActiveSheet()->getCell($array[$ke].$i)->getDataValidation(); //这一句为要设置数据有效性的单元格
-            //                 $objValidation -> setType(PHPExcel_Cell_DataValidation::TYPE_LIST)
-            //                     -> setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION)
-            //                     -> setAllowBlank(false)
-            //                     -> setShowInputMessage(true)
-            //                     -> setShowErrorMessage(true)
-            //                     -> setShowDropDown(true)
-            //                     -> setError('您输入的值不在下拉框列表内.')
-            //                     -> setFormula1('"'.$va['virtual'].'"');
-            //             }
-            //             break;break;
-            //         }
-            //         $objActSheet->setCellValue($array[$ke].$i," ".$va['name']);
-            //         if(!empty($va['virtual'])){
-            //             $objValidation = $objPHPExcel->getActiveSheet()->getCell($array[$ke].$i)->getDataValidation(); //这一句为要设置数据有效性的单元格
-            //             $objValidation -> setType(PHPExcel_Cell_DataValidation::TYPE_LIST)
-            //                 -> setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION)
-            //                 -> setAllowBlank(false)
-            //                 -> setShowInputMessage(true)
-            //                 -> setShowErrorMessage(true)
-            //                 -> setShowDropDown(true)
-            //                 -> setError('您输入的值不在下拉框列表内.')
-            //                 -> setFormula1('"'.$va['virtual'].'"');
-            //         }
-            //         break;break;
-            //     }
-            // }
-            if(array_key_exists($kes, $array)){
-                if(empty($va['name'])){
-                    if(!empty($va['virtual'])){
-                        if(!empty($va['virtual'])){
-                            $objValidation = $objPHPExcel->getActiveSheet()->getCell($array[$kes].$i)->getDataValidation(); //这一句为要设置数据有效性的单元格
-                            $objValidation -> setType(PHPExcel_Cell_DataValidation::TYPE_LIST)
-                                -> setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION)
-                                -> setAllowBlank(false)
-                                -> setShowInputMessage(true)
-                                -> setShowErrorMessage(true)
-                                -> setShowDropDown(true)
-                                -> setError('您输入的值不在下拉框列表内.')
-                                -> setFormula1('"'.$va['virtual'].'"');
-                            
-                        }
-                    }
-                }else{
-                   $objActSheet->setCellValue($array[$kes].$i," ".$va['name']);
-                    if(!empty($va['virtual'])){
-                        $objValidation = $objPHPExcel->getActiveSheet()->getCell($array[$kes].$i)->getDataValidation(); //这一句为要设置数据有效性的单元格
-                        $objValidation -> setType(PHPExcel_Cell_DataValidation::TYPE_LIST)
-                            -> setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_INFORMATION)
-                            -> setAllowBlank(false)
-                            -> setShowInputMessage(true)
-                            -> setShowErrorMessage(true)
-                            -> setShowDropDown(true)
-                            -> setError('您输入的值不在下拉框列表内.')
-                            -> setFormula1('"'.$va['virtual'].'"');
-                        
-                    }
-                }
-            }
-        }
-        //设置行高度
-        $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(15);
-        $i++;
-    }
-    \Think\Log::record("数据填充完成时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
-    unset ($data);
-    unset ($array);
-    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel,'Excel2007');
-    \Think\Log::record("new一个新的excel对象时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
-    $objWriter->save('./Public/Template/Data/'.$date.'.xlsx');
-    \Think\Log::record("excel另存结束时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
-    $fileName='./Public/Template/Data/'.$date.'.xlsx';
-//    $name = $date.'.xls';
-    $fileName = iconv("utf-8", "gb2312", $fileName);
-    if(!is_dir($fileName)){
-        $das['form_id']=$form_id;
-        $das['file']=$date.'.xlsx';
-        $das['file_type']='xlsx';
-        $das['path']=$fileName;
-        $das['creator_id']=0;
-        $das['created_time']=date('Y-m-d-H-i-s',time());
-        $das['modified_time']=date('Y-m-d-H-i-s',time());
-        M('product_batch_form2file')->data($das)->add();
-        return $fileName;
-    }else{
-        return -1;
-    }
-}
-
 //随机生成模块编码
 function generate_code( $length = 2 ) {  
     // 字符集，可任意添加你需要的字符  
@@ -516,13 +352,8 @@ function imageUpload( $name, $path, $type, $form_id, $id, $num)
 {
     \Think\Log::record("开始时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
     set_time_limit(0);
-    //$url = 'http://120.25.228.115/ImagesUpload/index.php/Home/Picture/receivePic'; //图片API服务器
+    // 图片API服务器
     $url = 'http://120.25.228.115/InterPhotos/upload.api.php';
-    // $post_data = array(
-    //     'pic' => new CURLFile(realpath($path), $type, $name),
-    //     'form_id' => $form_id,
-    //     'ids' => $id
-    // );
     $post_data = array(
         'pic' => new CURLFile(realpath($path), $type, $name),
         'categoryid' => 1,
@@ -534,8 +365,6 @@ function imageUpload( $name, $path, $type, $form_id, $id, $num)
     curl_setopt($ch, CURLOPT_POST,true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 0);
-    // curl_setopt($ch, CURLOPT_TIMEOUT, 60);   //只需要设置一个秒的数量就可以
-    // curl_setopt($ch, CURLOPT_TIMEOUT_MS , 200000);   
     curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
     $res = curl_exec($ch);
     curl_close($ch);

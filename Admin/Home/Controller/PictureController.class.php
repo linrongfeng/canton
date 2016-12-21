@@ -1,32 +1,10 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-use Think\ImageCategory;
+use Think\Controller;
 
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true');
-header("Content-Type: application/json;charset=utf-8");
-
-class PictureController extends RestController{
+class PictureController extends BaseController
+{
     public $insert_id = array();
-
-    public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
 
     // 拉取图片
     public function get_picture(){
@@ -258,20 +236,6 @@ class PictureController extends RestController{
             $data['msg']    = '产品类目选取失败';
             $this->response($data, 'json');
         }
-        // if(empty($gallery_id)){
-        //     $mi = $m->where(array('category_id'=>$category_id))->field("id")->select();
-        //     if(!$mi){
-        //         $data['status'] = 104;            // 该类目里面还没有图片类目需要创建
-        //         $data['msg']    = '该类目里面还没有图片类目，需要先创建';
-        //         $this->response($data, 'json');exit();
-        //     }
-        //     foreach($mi as $value){
-        //         $c_array[] = $value['id'];
-        //     }
-        //     $gaid = implode("," , $c_array);
-        // } else {
-        //     $gaid = $gallery_id;
-        // }
         
         if(empty($gallery_id)){
             $data['status'] = 102;
@@ -305,7 +269,6 @@ class PictureController extends RestController{
             $tags .= ")";
         }
         $result = M()->query("SELECT * FROM marrypic WHERE gallery_id IN($gaid) $f AND rubbish=0 AND u_time<='$do_date' $tags ORDER BY RAND() ASC limit $pic_num");
-        //echo  M()->_sql();exit();
         if($result){
             $rand_id         = rand(100000,999999);
             $data['status']  = 100;
@@ -355,10 +318,8 @@ class PictureController extends RestController{
     }
 
 
-    public function clear_rubbish(){
-        // 后期权限增加无权限不可进行次操作 \Think\Picture\clear_rubbish 也需要开启权限
-
-        //if(isset($_SESSION['user_id'])){
+    public function clear_rubbish()
+    {
         $result = \Think\Product\Picture::clear_rubbish();
         if($result['error'] == 0){
             $data['status'] = 100;
@@ -366,11 +327,6 @@ class PictureController extends RestController{
             $data['status'] = $result['status'];
             $data['msg']    = $result['msg'];
         }
-        //}else{
-        //    $data['status'] = 102; // 权限不足
-        //    $data['msg']    = '权限不足';
-        //}
-
         $this->response($data,'json');
     }
 
@@ -558,55 +514,48 @@ class PictureController extends RestController{
                 $arrays[] = $va;
             }
         }
-         //$this->response($arrays,'json');exit();
         S('PicProgress_'.$form_id,null);
         foreach ($arrays as $key => $valu) {
-                //$this->response($valu['image_url'],'json');exit();
-                $qian = array('http://',$_SERVER['HTTP_HOST'],__ROOT__);
-                $hou = array('','','');
-                $url = str_replace($qian,$hou,$valu['image_url']);
-                $tmpFile = '.'.$url;
-                // $tmpName = substr(strrchr($valu['image_url'],'/'),1);
-                $tmpName = pathinfo($valu['image_url'],PATHINFO_BASENAME);
-                // $tmpType = substr(strrchr($valu['image_url'],'.'),1);
-                $tmpType = pathinfo($valu['image_url'],PATHINFO_EXTENSION);
+            $qian = array('http://',$_SERVER['HTTP_HOST'],__ROOT__);
+            $hou = array('','','');
+            $url = str_replace($qian,$hou,$valu['image_url']);
+            $tmpFile = '.'.$url;
+            $tmpName = pathinfo($valu['image_url'],PATHINFO_BASENAME);
+            $tmpType = pathinfo($valu['image_url'],PATHINFO_EXTENSION);
             \Think\Log::record("图片大小:".ceil(filesize($tmpFile) / 1000) . "k",'DEBUG',true);
                 
-                //执行上传
-                $re = json_decode(imageUpload( $tmpName, $tmpFile, $tmpType, $form_id, $valu['ids'],$valu['num']),true);
-                
-                //$this->response($re,'json');exit();
-                if($re['status'] == 100){
-                    foreach ($re['value'] as $rekey => $re_value) {
-                        $data[$i]['id'] = $re_value['ids'];
-                        $data[$i]['image_url'] = $re_value['image_url'];
-                        $data[$i]['photo'] = $valu['image_url'];
-                        $data[$i]['status_msg'] = $re_value['status_msg'];
-                        $i++;
-                    }
-                    $success++;
-                }else{
-                    foreach ($valu['ids'] as $id_key => $id_value) {
-                        $data[$i]['status_msg'] = '';
-                        $data[$i]['msg'] = $re['msg'];
-                        $data[$i]['id'] = $id_value;
-                        $data[$i]['photo'] = $valu['image_url'];
-                        $data[$i]['image_url'] = $valu['image_url'];
-                        $i++;
-                    }
-                    $error++;
+            //执行上传
+            $re = json_decode(imageUpload( $tmpName, $tmpFile, $tmpType, $form_id, $valu['ids'],$valu['num']),true);
+            if($re['status'] == 100){
+                foreach ($re['value'] as $rekey => $re_value) {
+                    $data[$i]['id'] = $re_value['ids'];
+                    $data[$i]['image_url'] = $re_value['image_url'];
+                    $data[$i]['photo'] = $valu['image_url'];
+                    $data[$i]['status_msg'] = $re_value['status_msg'];
+                    $i++;
                 }
-                $cache = S('PicProgress_'.$form_id);
-                if(empty($cache['num'])){
-                    $das['count'] = $countPic;
-                    $das['num'] = $valu['num'];
-                    S('PicProgress_'.$form_id,$das);
-                }else{
-                    $das['count'] = $countPic;
-                    $das['num'] = $valu['num'] + $cache['num'];
-                    S('PicProgress_'.$form_id,$das);
+                $success++;
+            }else{
+                foreach ($valu['ids'] as $id_key => $id_value) {
+                    $data[$i]['status_msg'] = '';
+                    $data[$i]['msg'] = $re['msg'];
+                    $data[$i]['id'] = $id_value;
+                    $data[$i]['photo'] = $valu['image_url'];
+                    $data[$i]['image_url'] = $valu['image_url'];
+                    $i++;
                 }
-
+                $error++;
+            }
+            $cache = S('PicProgress_'.$form_id);
+            if(empty($cache['num'])){
+                $das['count'] = $countPic;
+                $das['num'] = $valu['num'];
+                S('PicProgress_'.$form_id,$das);
+            }else{
+                $das['count'] = $countPic;
+                $das['num'] = $valu['num'] + $cache['num'];
+                S('PicProgress_'.$form_id,$das);
+            }
         }
         $array['status'] = 100;
         S('PicProgress_'.$form_id,null);

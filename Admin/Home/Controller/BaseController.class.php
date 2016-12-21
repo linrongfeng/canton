@@ -5,8 +5,10 @@ header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:POST,GET');
 header('Access-Control-Allow-Credentials:true'); 
 header("Content-Type: application/json;charset=utf-8");
-/*
+/**
  * 基类
+ * @author cxl,lrf
+ * @modify 2016/12/21
  */
 class BaseController extends RestController
 {
@@ -57,5 +59,4 @@ class BaseController extends RestController
             return false;
         }
     }
-
 }

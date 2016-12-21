@@ -1,36 +1,16 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
+use Think\Controller;
 
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true');
-header("Content-Type: application/json;charset=utf-8");
-
-class CustomController extends RestController{
+class CustomController extends BaseController
+{
     public $rule_mobile = "/^1[34578]{1}[0-9]{9}$/";
     public $rule_enname = "/^[A-z\s]+$/";
     public $rule_email  = "/^([0-9A-Za-z\\-_\\.]+)@([0-9a-z]+\\.[a-z]{2,3}(\\.[a-z]{2})?)$/i";
 
-    public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
-
     // 拉取客户信息
-    public function getCustom(){
+    public function getCustom()
+    {
         $m = M("customer");
         $enabled = isset($_POST['enabled']) ? I('enabled') : 1;
         $pageSize = isset($_POST['pageSize']) ? I('pageSize') :10;

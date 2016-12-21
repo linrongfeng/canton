@@ -1,16 +1,11 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 /**
 * 定制模板控制器
 */
-class CustomTemController extends RestController{
-	protected $allowMethod    = array('get','post','put','delete');
-    protected $defaultType      = 'json';
+class CustomTemController extends BaseController
+{
 	/**
      * 创建模板
     */

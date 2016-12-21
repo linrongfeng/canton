@@ -1,38 +1,15 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 /**
  * 产品资料控制器
  */
-
-class ProductInfoController extends RestController{
+class ProductInfoController extends BaseController{
     protected $dt   = "/^([1][7-9]{1}[0-9]{1}[0-9]{1}|[2][0-9]{1}[0-9]{1}[0-9]{1})(-)([0][1-9]{1}|[1][0-2]{1})(-)([0-2]{1}[1-9]{1}|[3]{1}[0-1]{1})*$/";
     protected $dt1  = "/^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])(\.)([0][1-9]|[1][0-2])(\.)([0-2][1-9]|[3][0-1])*$/";
     protected $dt2  = "/^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])([0][1-9]|[1][0-2])([0-2][1-9]|[3][0-1])*$/";
     protected $dt3  = "/^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])(\/)([0][1-9]|[1][0-2])(\/)([0-2][1-9]|[3][0-1])*$/";
 
-    public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
-
-    
 	/**
      * 删除产品资料 
      */
@@ -68,8 +45,6 @@ class ProductInfoController extends RestController{
      */
 	public function getOneFormInfo(){
         $form_id     = I('form_id');
-        $pageNow     = isset($_POST['next']) ? (int)I('post.next') : 1;
-        $pageSize    = isset($_POST['pageSize']) ? (int)I('post.pageSize') : 20;
         $template_id = I('post.template_id');
         $type_code   = I('post.type_code');
         $status      = I('post.status');
@@ -80,8 +55,6 @@ class ProductInfoController extends RestController{
             $this->response($data,'json');
             exit();
         }
-
-        $d = array();
         if(empty($form_id) || empty($template_id) || empty($type_code)){
             $data['status'] = 102;
             $data['msg']    = '资料表、模板为必选项';
@@ -95,41 +68,7 @@ class ProductInfoController extends RestController{
              $data['status'] = 111;
          }elseif($res){
              $data['status']    = 100;
-
              $data['value']     = $res;
-
-             // // ↓↓↓↓↓↓↓↓↓↓ 数据分页返回，默认5条主体一页（可用，勿删）↓↓↓↓↓↓↓↓↓↓↓↓↓
-             // $count = count($res);
-             // $data['countNum']  = $count;
-
-             // $page = array();
-             // foreach($res as $k => $v){  // 提出所有主体，并保存所出现的位置
-             //     if($v['parent_id'] == 0){
-             //         $page[] = $k;
-             //     }
-             //     continue;
-             // }
-
-             // $zt_count = count($page);  // 主体数量
-             // $pageAll  = ceil($zt_count / $pageSize); // 总页数
-             // if($pageNow >= $pageAll){     // 判断是否为最后一页
-             //     $end   = $count;
-             // }elseif($pageNow > 0 && $pageNow < $pageAll){
-             //     $ends  = $pageNow * $pageSize;
-             //     $end   = $page[$ends];
-             // }
-             // $sta   = ( $pageNow - 1 ) * $pageSize;
-             // $start = $page[$sta];
-
-             // for($k = $start ; $k < $end ; $k ++){  // 通过主体出现的位置返回数据包
-             //     $data['value'][] = $res[$k];
-             // }
-
-             // $data['countPage'] = $pageAll;      // 总页数
-             // $data['next']      = $pageNow + 1;  // 下一页页码
-             // $data['pageNow']   = $pageNow;      // 当前页
-
-
          }else{             // 如果没有数据则给默认
             $data['status'] = 100;
             $data['value'] = array();    
@@ -151,7 +90,7 @@ class ProductInfoController extends RestController{
             $this->response($data,'json');
             exit();
         }
-\Think\Log::record("开始时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
+        \Think\Log::record("开始时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
         $formdata = M('product_form')->where(array('id'=>$form_id))->field('template_id')->find();
         $form     = M('product_item_template')->where(array('template_id'=>$formdata['template_id']))->select();
         foreach($form as $key => $value){   // 获取表头信息
@@ -162,7 +101,7 @@ class ProductInfoController extends RestController{
 
         $en['status_code'] = 'enabled';
         M('product_form')->where(array('id'=>$form_id))->save($en);  // 改状态
-\Think\Log::record("数据准备完成时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
+        \Think\Log::record("数据准备完成时间:".date('Y-m-d H:i:s',time()),'DEBUG',true);
         getExcel($header,$body);
 	}
 
@@ -240,15 +179,12 @@ class ProductInfoController extends RestController{
      * */
     public function infoControl(){
         set_time_limit(0);
-
         $id          = array();
         $pid         = array();
         $addData     = array();
         $arr         = array();
         $pro_data    = array();
         $type_code   = I('post.type_code');
-
-        
 
         if($type_code == 'info'){
             $code = 'product_information_record';//应用代码，将用于获取全局产品记录id
@@ -716,13 +652,6 @@ class ProductInfoController extends RestController{
         $tem_data = \Think\Product\Product_Item_Template::get('info',$template_id,"no,en_name,data_type_code,length,default_value");
         $z = 0;
         $j = 0;
-        // $sku_num = $sku_num2 - $sku_num1;
-        // if( $sku_num < ceil($product_count / $variant_num)){
-        //     $arr['status'] = 102;
-        //     $arr['msg'] = "SKU编码区间不够";
-        //     $this->response($arr,'json');
-        //     exit();
-        // }
 
         $code = $sku_num1;
         $size_start = $size1;
@@ -819,7 +748,6 @@ class ProductInfoController extends RestController{
                         $w_upda = $info->data($w_data)->where($w_where)->save();
                     }
                     if(!empty($priceUsd1) && !empty($priceUsd2)){//规则中的Price (USD)有值
-                        //$usd_where['product_id'] = $qvalue['product_id'];
                         $usd_where['parent_id'] = $qvalue['product_id'];
                         $usd_where['title'] = 'Price (USD)';
                         $usd_data['decimal_value'] = $price+$decimal;
@@ -827,7 +755,6 @@ class ProductInfoController extends RestController{
                         $usd_upda = $info->data($usd_data)->where($usd_where)->save();
                     }
                     if(!empty($priceUsd1) && !empty($priceUsd2)){//规则中的Price (GBP)有值
-                        //$gbp_where['product_id'] = $qvalue['product_id'];
                         $gbp_where['parent_id'] =  $qvalue['product_id'];
                         $gbp_where['title'] = "Price (GBP)";
                         $gbp_data['decimal_value'] = $price-1+$decimal;
@@ -894,7 +821,7 @@ class ProductInfoController extends RestController{
                 $price = rand($priceUsd1,$priceUsd2);
                 $decimal  = rand(1,99) / 100;
                 if(empty($hc_data[$s])){
-                    $s =0;
+                    $s = 0;
                 }
                 foreach ($tem_data['value'] as $keys => $values ) {
                     $data['id'] = $ids[$z];
@@ -1461,14 +1388,10 @@ class ProductInfoController extends RestController{
             $mo->where($where)->save($s_arr);
         }
 
-
-
-
         $request['default'] = $DefaultData;
         $request['variant'] = $VariantData;
 
         $res = \Think\Product\ProductInfo::GetOneFormInfo('batch' , $form_id);
-
         foreach($res as $key => $value){
             foreach($value as $k => $v){
                 foreach($request as $kt => $vt){
@@ -1568,8 +1491,6 @@ class ProductInfoController extends RestController{
             $this->response($arr,'json');
             exit();
         }
-        // print_r($check);
-        // $this->response($check,'json');exit();
         if($type_code == 'info'){
             $item = D('Info2ProductView');
             $form_info = M('product_form_information');
@@ -1614,7 +1535,6 @@ class ProductInfoController extends RestController{
             }elseif($value == 2){  // 重复的  
                 $query = $item->field("count(".$fields."),GROUP_CONCAT(".$product_id.") AS product_id")->where($where)->group($fields)->order("count(".$fields.") desc")->select();
                 $count =count($query);
-                // echo($item->getLastSQL());exit();
                 if($count == 1){
                     $array[$i]['field'] = $key;
                     $array[$i]['value'] = "数据无误";

@@ -1,41 +1,18 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 
 /*
 *  产品资料模板
 */
-class TemplateItemController extends RestController
+class TemplateItemController extends BaseController
 {
-    protected $allowMethod      = array('get','post','put','delete');
-    protected $defaultType      = 'json';
     protected $rule_enname      = "/^[a-z_A-Z()\s]+[0-9]{0,10}$/";
     protected $rule_num         = "/^[0-9]+$/";
     protected $dt               = "/^([1][7-9]{1}[0-9]{1}[0-9]{1}|[2][0-9]{1}[0-9]{1}[0-9]{1})(-)([0][1-9]{1}|[1][0-2]{1})(-)([0-2]{1}[1-9]{1}|[3]{1}[0-1]{1})*$/";
     protected $dt1              = "/^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])(\.)([0][1-9]|[1][0-2])(\.)([0-2][1-9]|[3][0-1])*$/";
     protected $dt2              = "/^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])([0][1-9]|[1][0-2])([0-2][1-9]|[3][0-1])*$/";
     protected $dt3              = "/^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])(\/)([0][1-9]|[1][0-2])(\/)([0-2][1-9]|[3][0-1])*$/";
-
-    public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
 
     public function get_item_template(){
         $type_code=strip_tags(trim(I('type_code')));
@@ -438,7 +415,6 @@ class TemplateItemController extends RestController
             }
 
             // 查找是否有重复
-            // $isset1 = $m->where(array('template1_id' => $template_id,'template2_id' => $batch_template_id,'title1_id' => $val['infoId']))->find();
             $isset2 = $m->where(array('template1_id' => $template_id,'template2_id' => $batch_template_id,'title2_id' => $val['batchId']))->find();
             if($isset2){
                 continue;           // 重复，跳过
@@ -530,31 +506,6 @@ class TemplateItemController extends RestController
         $this->response($arr,'json');
     }
 
-    public function testtest(){
-//        $filename,$type,$model,$highestRow = '' //  read_excel 参数
-        $res = read_excel("./Public/Template/Item/batchItem_20161129-141752.xls",'Excel5',3,'batch',3);
-        // $r   = 0;
-        // foreach ( $res as $v ) {
-        //     $header[] = $v;
-        //     $r ++;
-        // }
-        
-        foreach($res as $key => $value){
-            foreach($value as $k => $v){
-                if($v != ''){
-                    $arr[$k][] = $v;
-                }
-            }
-        }
-        foreach($arr as $kv => $vv){
-            $strings[$vv[0]] = $vv;
-        }
-        foreach($strings as $kk => $vs){
-            unset($vs[0]);
-            $s[$kk] = implode("," ,$vs);
-        }
-print_r($res);die;
-    }
     /*
      * 批量表表头上传  
      * */
@@ -625,11 +576,6 @@ print_r($res);die;
 
                         // 上传成功读取录入
                         $res = read_excel($item_file , $types , $page , $type_code ,$height);
-                        // $r   = 0;
-                        // foreach ( $res as $v ) {
-                        //     $header[] = $v;
-                        //     $r ++;
-                        // }
 
                         $da['enabled']        = 1;
                         $da['creator_id']     = $creator_id;
@@ -699,18 +645,17 @@ print_r($res);die;
         if($type_code == 'info'){
             $template_id = 0;
         }
-            // 添加文件与模板的关联方便读取写入数据
-            $_file = array(
-                'template_id'   => $template_id,
-                'file'          => $file_name,
-                'file_type'     => $type,
-                'path'          => $dir,
-                'creator_id'    => $creator_id,
-                'created_time'  => date('Y-m-d H:i:s' , time()),
-                'modified_time' => date('Y-m-d H:i:s' , time()),
-            );
-            $ins = M('product_batch_template2file')->add($_file);
-
+        // 添加文件与模板的关联方便读取写入数据
+        $_file = array(
+            'template_id'   => $template_id,
+            'file'          => $file_name,
+            'file_type'     => $type,
+            'path'          => $dir,
+            'creator_id'    => $creator_id,
+            'created_time'  => date('Y-m-d H:i:s' , time()),
+            'modified_time' => date('Y-m-d H:i:s' , time()),
+        );
+        $ins = M('product_batch_template2file')->add($_file);
         
         if($ins){
             $m->commit();
@@ -867,7 +812,6 @@ print_r($res);die;
             $item = M('product_batch_item_template');
         }
         $sql = $form->field("template_id")->where("id=%d",array($form_id))->find();
-        //$where['filling_type'] = array('exp','IN (1,2)');
         $where['value_requlation'] = array('exp','IN (1,2)');
         $where['template_id'] = $sql['template_id'];
         $query = $item->field("en_name,value_requlation")->where($where)->select();
@@ -880,8 +824,8 @@ print_r($res);die;
             $arr['msg']    = '没有数据';
         }else{
             $arr['status'] = 100;
-            $arr['value']    = $array;
-            $arr['title'] = $title;
+            $arr['value']  = $array;
+            $arr['title']  = $title;
         }
         $this->response($arr,'json');
     }

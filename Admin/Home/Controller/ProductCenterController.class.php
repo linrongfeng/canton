@@ -1,14 +1,11 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true');
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 /**
 * 产品中心控制器
 */
-class ProductCenterController extends RestController{
+class ProductCenterController extends BaseController
+{
 	protected $file = "./Public/file/";
 	protected $rule_str    = "/^[a-z_A-Z()\s]+[0-9]{0,10}$/";
 	//添加修改产品中心产品信息接口
@@ -30,11 +27,11 @@ class ProductCenterController extends RestController{
 		if($state == 'single'){
 			$cn_name =  I('post.cn_name');
 			$en_name =  I('post.en_name');
-			$enabled =  !empty(I('post.enabled'))?I('post.enabled'):1;
+			$enabled =  !empty(I('post.enabled')) ? I('post.enabled') : 1;
 			$remark  = I('post.remark');
-			$data['cn_name'] =  $cn_name;
-			$data['en_name'] =  $en_name;
-			$data['enabled'] =  $enabled;
+			$data['cn_name'] = $cn_name;
+			$data['en_name'] = $en_name;
+			$data['enabled'] = $enabled;
 			$data['category_id'] = !empty($category_id)?$category_id:1;
 			$data['remark']  = $remark;
 			$data['creator_id'] = $creator_id;
@@ -119,20 +116,6 @@ class ProductCenterController extends RestController{
         	    $data['msg']    = '没有文件被上传';
     			$this->response($data,'json');exit();
     		}
-
-
-			//发送数据包添加
-			// $packetdata = I('post.packetdata');
-			// foreach ($$packetdata as $key => $value) {
-			// 	$array[$key] = $value;
-			// 	$array[$key]['category_id'] = $category_id;
-			// 	$array[$key]['creator_idcreator_id'] = $creator_id;
-			// 	$array[$key]['created_time'] = date('Y-m-d H:i:s',time());
-			// 	$array[$key]['modified_time'] = date('Y-m-d H:i:s',time());
-			// }
-			// $res = \Think\ProductCenter::SetProductCenter($state,$array);
-			// $arr['status'] = 100;
-			// $arr['value'] = $res;
 		}elseif ($state == 'update') {
 			$id = I('post.id');
 			$cn_name =  I('post.cn_name');

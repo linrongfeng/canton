@@ -1,34 +1,13 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 /*
  * 用户中心
  */
-class UserController extends RestController
+class UserController extends BaseController
 {
     public $m_rule = '/^1[34578]{1}\d{9}$/';
     public $e_rule = '/^([0-9A-Za-z\\-_\\.]+)@([0-9a-z]+\\.[a-z]{2,3}(\\.[a-z]{2})?)$/i';
-
-    public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
 
     /*
      * 用户访问 / 用户列表
@@ -190,7 +169,6 @@ class UserController extends RestController
                 'mobile'    => $mobile,
                 'is_staff'  => $is_staff,
                 'is_head'   => $is_head,
-//                'sex'       => $sex,
                 'remark'    => $remark,
                 'enabled'   => $enabled,
                 'modified_time' => date('Y-m-d H:i:s', time()),
@@ -233,17 +211,4 @@ class UserController extends RestController
             $this->response(['status' => 103, 'msg' => '请求失败'],'json');
         }
     }
-
-
-//    public function testMem(){
-//        $cache = \Think\Cache::getInstance('Memcache');
-//        $cache->set('key',123456,3600);
-//    }
-//
-//    public function getMem()
-//    {
-//        $cache = \Think\Cache::getInstance('Memcache');
-//        $a = $cache->get('key');
-//        echo($a);
-//    }
 }

@@ -1,34 +1,11 @@
 <?php
 namespace Home\Controller;
-use Think\Controller\RestController;
-header('Access-Control-Allow-Origin:*');
-header('Access-Control-Allow-Methods:POST,GET');
-header('Access-Control-Allow-Credentials:true'); 
-header("Content-Type: application/json;charset=utf-8");
+use Think\Controller;
 /**
 * 类目管理控制器
 */
-class CategoryController extends RestController
+class CategoryController extends BaseController
 {
-    protected $allowMethod    = array('get','post','put','delete');
-    protected $defaultType    = 'json';
-    public function _initialize()
-    {
-        // 没登录
-        $auth = new \Think\Product\PAuth();
-        $key = I('key');
-        $uid = I('user_id');
-        $uids = $auth->checkKey($uid, $key);
-        if(!$uids){
-            $this->response(['status' => 1012,'msg' => '您还没登陆或登陆信息已过期'],'json');
-        }
-        // 读取访问的地址
-        $url = CONTROLLER_NAME . '/' . ACTION_NAME;
-        if(!$auth->check($url , $uids)){
-            $this->response(['status' => 1011,'msg' => '抱歉，权限不足'],'json');
-        }
-    }
-
     /**
      * 添加子类目
      */
@@ -43,7 +20,6 @@ class CategoryController extends RestController
             $this->response($arr,'json');
             exit();
         }
-
         $data = array();
         if($id != null){
             if($cn_name != null){
@@ -86,7 +62,7 @@ class CategoryController extends RestController
             $data['status'] = 112;
             $data['msg']    = '顶级类目不可操作';
         }elseif($res == 3){
-            $data['status'] = 103;  // 类目下存在图片类目不能直接删除
+            $data['status'] = 103;
             $data['msg']    = '类目下有关联数据不能删除';
         }elseif($res == 4){
             $data['status'] = 103;
