@@ -56,6 +56,7 @@ class SubareaController extends BaseController
 		$id=I('post.id');
 		if(empty($id)){
 			$tbl_name=I('post.tbl_name');
+            $tbl_name = __sqlSafe__($tbl_name);
 		}else{
 			$table=M(C('DB_TABLE_NAME'));
 			$tbl=$table->field("tbl_name")->where("id=%d",array($id))->find();
@@ -85,7 +86,7 @@ class SubareaController extends BaseController
 	public function setSubarea(){
 		$tbl_name=I('post.tbl_name');
 		$type=I('post.type');
-		$key=I('post.ckey');
+		$key=I('post.key');
 		$num=I('post.num');
 		$interval=I('post.interval');
 		$subtype=I('post.subtype');
@@ -292,7 +293,7 @@ class SubareaController extends BaseController
 		$tbl=$table->where("id=%d",array($id))->find();
 		$tbl_name=$tbl['tbl_name'];
 		$type=I('post.type');
-		$key=I('post.ckey');
+		$key=I('post.key');
 		$num=I('post.num');
 		$interval=I('post.interval');
 		$subtype=I('post.subtype');

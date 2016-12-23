@@ -19,11 +19,11 @@ class ProductInfoController extends BaseController{
      * @param type_code info/batch
      */
 	public function delInfo(){
-        $form_id   = I('post.form_id');
-		$id        = I('post.product_id');
+        $form_id   = (int)I('post.form_id');
+		$id        = (int)I('post.product_id');
         $type_code = I('post.type_code');
 
-        if(empty($type_code) || ($type_code != 'info' && $type_code != 'batch')){
+        if($type_code != 'info' && $type_code != 'batch'){
             $data['status'] = 119;
             $data['msg']    = '系统错误';
             $this->response($data,'json');
@@ -52,12 +52,12 @@ class ProductInfoController extends BaseController{
      * @param type_code info/batch
      */
 	public function getOneFormInfo(){
-        $form_id     = I('form_id');
-        $template_id = I('post.template_id');
+        $form_id     = (int)I('form_id');
+        $template_id = (int)I('post.template_id');
         $type_code   = I('post.type_code');
         $status      = I('post.status');
 
-        if(empty($type_code) || ($type_code != 'info' && $type_code != 'batch')){
+        if($type_code != 'info' && $type_code != 'batch'){
             $data['status'] = 119;
             $data['msg']    = '系统错误';
             $this->response($data,'json');
@@ -93,7 +93,7 @@ class ProductInfoController extends BaseController{
     public function getFormInfo(){
         
         set_time_limit(0);
-        $form_id = I('post.form_id');
+        $form_id = (int)I('post.form_id');
         $picount = (int)I('post.picCount');  // 图片总数
         if(!preg_match("/^[0-9]+$/" , $form_id) || !preg_match("/^[0-9]+$/" , $picount)){
             $this->response(['status' => 102 , 'msg' => '表格选择有误'],'json');exit();
@@ -192,7 +192,7 @@ class ProductInfoController extends BaseController{
             $data['num'] = $num['number'];
         }
         // 推动到java端进行表格生成
-        $data['savepath'] =  C('SAVE_PATH').substr(C('BATCH_SAVE_PATH'),1).str_replace(" ","_",$fileName).'.'.$batch['file_type'];
+        $data['savepath'] =  C('SAVE_PATH').substr(C('BATCH_SAVE_PATH'),1).$fileName.'.'.$batch['file_type'];
         curl_setopt($ch, CURLOPT_URL, "http://localhost/excel4php/javaoptexcel.php");  
         curl_setopt($ch, CURLOPT_HEADER, false);  
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
@@ -205,7 +205,7 @@ class ProductInfoController extends BaseController{
             $en['status_code'] = 'finished';
             M('product_batch_form')->where(array('id'=>$form_id))->save($en);
             $das['form_id']       = $form_id;
-            $das['file']          = str_replace(" ","_",$fileName).'.'.$batch['file_type'];
+            $das['file']          = $fileName.'.'.$batch['file_type'];
             $das['file_type']     = $batch['file_type'];
             $das['path']          = C('BATCH_SAVE_PATH').$das['file'];
             $das['creator_id']    = $creator_id;
@@ -226,7 +226,7 @@ class ProductInfoController extends BaseController{
      * */
     public function back_step(){
         set_time_limit(0);
-        $form_id = I('post.form_id');
+        $form_id = (int)I('post.form_id');
         if(!preg_match("/^[0-9]+$/" , $form_id)){
             $data['status'] = 102;
             $data['msg']    = '表单未选择';
@@ -245,7 +245,7 @@ class ProductInfoController extends BaseController{
 
     //根据资料表id获取批量表模板
     public function GetBatchTel(){
-        $form_id = I('form_id');
+        $form_id = (int)I('form_id');
         $res = \Think\Product\ProductInfo::GetBatchTemplate($form_id);
         if($res){
             $arr['status'] = 100;
@@ -297,7 +297,7 @@ class ProductInfoController extends BaseController{
     public function receiveValue(){
         $data        = I('post.data');
         $form_no     = I('post.form_no');
-        $category_id = I('post.category_id');
+        $category_id = (int)I('post.category_id');
         $picDate     = I('post.picData');
         if(empty($category_id) || empty($form_no)){
             $this->response(['status' => 119, 'msg' => "系统错误"],'json');
@@ -358,7 +358,7 @@ class ProductInfoController extends BaseController{
         $this->response($arr,'json');
     }
 
-    /*
+        /*
      * 资料表自动填表
      * @param table_info 资料表表格信息
      */
@@ -584,7 +584,7 @@ class ProductInfoController extends BaseController{
         //获取全局id （产品id，产品记录id）
         $id = GetSysId('product_information',$num);
         $ids = GetSysId('product_information_record',count($tem_data['value'])*$num);
-        
+
         if(empty($variant_num)){//没有变体的自动填表
             
             for($i = 0 ;$i < $product_count; $i++){
@@ -1252,7 +1252,7 @@ class ProductInfoController extends BaseController{
     // 资料表撤销后退
     // @param form_id  表格id
     public function rollbackProduct(){
-        $form_id = I('post.form_id');
+        $form_id = (int)I('post.form_id');
         if(!preg_match("/^[0-9]+$/" , $form_id) || empty($form_id)){
             $data['status'] = 102;
             $data['msg']    = '表单未选择';
