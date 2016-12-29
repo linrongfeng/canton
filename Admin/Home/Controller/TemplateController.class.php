@@ -344,7 +344,8 @@ class TemplateController extends BaseController
     //获取模板信息可模糊搜索
     // @param type_code info/batch
     public function getitemValue(){
-    	$enabled   = (int)I("post.enabled");    // 可用状态参数，默认为可用 1
+
+    	$enabled   = I("post.enabled");    // 可用状态参数，默认为可用 1
 		$type_code = I('post.type_code');
         $num       = isset($_POST['num']) ? (int)I('post.num') : 8;
         $next      = isset($_POST['next']) ? (int)I('post.next') : 1;

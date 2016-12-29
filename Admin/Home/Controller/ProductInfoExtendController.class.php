@@ -19,22 +19,17 @@ class ProductInfoExtendController extends BaseController
      * @param type_code  资料表或者批量表 
 	 */
 	public function getTemFormat(){
-		$template_id = I('post.template_id');
-		$type_code = I('post.type_code');
-		if($type_code != 'info' && $type_code !='batch'){
-			$arr['status'] = 119;
-			$arr['msg'] = "系统错误";
-			$this->response($arr,'json');
-			exit();
-		}
-		if(empty($template_id)){
+		$template_id = (int)I('post.template_id');
+		$type_code   = I('post.type_code');
+        if($type_code != 'info' && $type_code != 'batch') $this->response(['status'=> 119, 'msg' => '系统错误']);
+
+		if($template_id == 0){
 			$arr['status'] = 102;
 			$arr['msg'] = "模板信息错误";
-			$this->response($arr,'json');
-			exit();
+			$this->response($arr);
 		}
 		$res = \Think\Product\ProductInfoExtend::GetTemplateFormat($template_id,$type_code);
-		$this->response($res,'json');
+		$this->response($res);
 	}
 
 	/*
@@ -48,44 +43,36 @@ class ProductInfoExtendController extends BaseController
      * @param gridColumns   表头数据
      * @param text post的所有数据
 	 */
-	public function dataCommit(){
+	public function dataCommit()
+    {
         set_time_limit(0);
-		$form_id = I('post.form_id');
+		$form_id     = I('post.form_id');
 		$template_id = I('post.template_id');
 		$category_id = I('post.category_id');
-		$type_code = I('post.type_code');
-		$type  = I('post.type');     // 暂存或者提交
-		$max = I('post.max');
+		$type_code   = I('post.type_code');
+		$type        = I('post.type');     // 暂存或者提交
+		$max         = I('post.max');
         $gridColumns = I('post.gridColumns');
-		$text = file_get_contents("php://input");
+		$text        = file_get_contents("php://input");
         $textdata    = urldecode($text);
-		
-		if($type_code != 'info' && $type_code !='batch'){
-			$arr['status'] = 119;
-			$arr['msg'] = "系统错误";
-			$this->response($arr,'json');
-			exit();
-		}
+
+		if($type_code != 'info' && $type_code !='batch') $this->response(['status' => 119, 'msg' => "系统错误"]);
 		if(empty($template_id)){
 			$arr['status'] = 102;
 			$arr['msg'] = "模板信息错误";
-			$this->response($arr,'json');
-			exit();
+			$this->response($arr);
 		}
 		if(empty($form_id)){
 			$arr['status'] = 102;
 			$arr['msg'] = "表格信息错误";
-			$this->response($arr,'json');
-			exit();
+			$this->response($arr);
 		}
 		if(empty($category_id)){
 			$arr['status'] = 102;
 			$arr['msg'] = "类目信息错误";
-			$this->response($arr,'json');
-			exit();
+			$this->response($arr);
 		}
 
-		                               
 		if($type_code == 'info'){
 			$item = M('product_item_template');
 			$info = M('product_information');
@@ -104,7 +91,7 @@ class ProductInfoExtendController extends BaseController
         $num  = ceil( $max / $n );
 
         $j = 0;
-        for($z = 0; $z < $num; $z ++) {                     // 分包获取传的产品数量
+        for($z = 0; $z < $num; $z ++) {     // 分包获取传的产品数量
             $b = stripos($textdata, 'gridData[' . $j . ']');
             $j = $j + $n;
             $c = stripos($textdata, 'gridData[' . $j . ']');
@@ -135,7 +122,7 @@ class ProductInfoExtendController extends BaseController
                     $m++;
                 }
             }
-       		
+
        	}
        	$newdata = $m*count($data_style);
        	if($newdata > 0){
@@ -143,7 +130,7 @@ class ProductInfoExtendController extends BaseController
        	}
 
        	$i = 0;
-       	
+
         //数据写入数据库
         foreach ($pro_data as $keys => $values) {
         	foreach ($values as $k => $valu) {
@@ -156,64 +143,64 @@ class ProductInfoExtendController extends BaseController
                         continue;
                     }
                     switch ($data_style[$value_key]['data_type_code']) {
-                        case 'int':  
+                        case 'int':
                             $data_type = 'interger_value';
                             if(!empty($val)){
                                 if(!preg_match("/^[0-9]*$/", $val)){
                                     $info->rollback();
                                     $array['status'] = 103;
                                     $array['msg']    = '整数数据类型填写错误';
-                                    $this->response($array, 'json');
+                                    $this->response($array);
                                     exit();
                                 }
                             }
-                             
+
                           break;
-                        case 'char': 
-                            $data_type = 'char_value'; 
+                        case 'char':
+                            $data_type = 'char_value';
                             if(!empty($val)){
                                 $nums = strlen(trim($val));
                                 if ($nums > $data_style[$value_key]['length']) {
                                     $info->rollback();
                                     $array['status'] = 106;
                                     $array['msg']    = '字符数据类型填写错误';
-                                    $this->response($array, 'json');
+                                    $this->response($array);
                                     exit();
                                 }
                             }
                           break;
-                        case 'dc':   
+                        case 'dc':
                             $data_type = 'decimal_value';
                             if(!empty($val)){
-                                if (!preg_match("/^(\d*\.)?\d+$/", $val)) { 
+                                if (!preg_match("/^(\d*\.)?\d+$/", $val)) {
                                     $info->rollback();
                                     $array['status'] = 104;
                                     $array['msg'] = '小数数据类型填写错误';
-                                    $this->response($array, 'json');
+                                    $this->response($array);
                                     exit();
                                 }
                             }
                           break;
-                        case 'dt':   
-                            $data_type = 'date_value'; 
+                        case 'dt':
+                            $data_type = 'date_value';
                             if(!empty($val)){
-                                if (preg_match($this->dt, $val) || preg_match($this->dt1, $val) || 
+                                if (preg_match($this->dt, $val) || preg_match($this->dt1, $val) ||
                                     preg_match($this->dt2, $val) || preg_match($this->dt3, $val)) {
                                     $info->rollback();
                                     $array['status'] = 105;
                                     $array['msg']    = '日期数据类型填写错误';
-                                    $this->response($array, 'json');
+                                    $this->response($array);
                                     exit();
                                 }
                             }
                           break;
-                        case 'bl':   
-                            $data_type = 'boolean_value'; 
+                        case 'bl':
+                            $data_type = 'boolean_value';
                           break;
-                        case 'upc_code': 
+                        case 'upc_code':
                             $data_type = 'char_value';
                           break;
-                        case 'pic': 
+                        case 'pic':
                             $data_type = 'char_value';
                           break;
                     }
@@ -232,7 +219,7 @@ class ProductInfoExtendController extends BaseController
                             $info->rollback();
                             $arr['status'] = 101;
                             $arr['msg'] = "提交或者暂存失败";
-                            $this->response($arr,'json');
+                            $this->response($arr);
                             exit();
                         }
                         $data = array();
@@ -242,24 +229,24 @@ class ProductInfoExtendController extends BaseController
                         $data['template_id']    = $template_id;
                         $data['product_id']     = $product_id;
                         $data['parent_id']      = $parent_id;
-                        $data['no'] = $data_style[$value_key]['no'];
-                        $data['title'] = $value_key;
+                        $data['no']             = $data_style[$value_key]['no'];
+                        $data['title']          = $value_key;
                         $data['data_type_code'] = $data_style[$value_key]['data_type_code'];
-                        $data['length'] = $data_style[$value_key]['length'];
-                        $data['precision'] = $data_style[$value_key]['precision'];
-                        $data['created_time'] = date('Y-m-d H:i:s',time());
+                        $data['length']         = $data_style[$value_key]['length'];
+                        $data['precision']      = $data_style[$value_key]['precision'];
+                        $data['created_time']   = date('Y-m-d H:i:s',time());
                         $query = $info->data($data)->add();
                         if($query === 'flase'){
                             $info->rollback();
                             $arr['status'] = 101;
                             $arr['msg'] = "提交或者暂存失败";
-                            $this->response($arr,'json');
+                            $this->response($arr);
                             exit();
                         }
                         $i++;
                         $data = array();
                     }
-                    
+
                 }
                 if($pro_data[$keys][$k][array_search('types',$gridColumns)] == 'yes'){
                     $datas['form_id'] = $form_id;
@@ -270,11 +257,11 @@ class ProductInfoExtendController extends BaseController
                         $info->rollback();
                         $arr['status'] = 101;
                         $arr['msg'] = "提交或者暂存失败";
-                        $this->response($arr,'json');
+                        $this->response($arr);
                         exit();
                     }
                 }
-            }		
+            }
         }
         //提交就修改表格状态
         if($type == 'submit'){
@@ -283,7 +270,7 @@ class ProductInfoExtendController extends BaseController
         }
         $info->commit();
         $arr['status'] = 100;
-       	$this->response($arr,'json');
+       	$this->response($arr);
 	}
-    
+
 }
