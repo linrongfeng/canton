@@ -235,7 +235,7 @@ class PictureController extends BaseController
         $num         = (int)I('num');   // 产品数量
         $variant_num = (int)I('v_num');     // 变体数量
         $category_id = (int)I('category_id');     // 产品目录
-        $gallery_id  = (int)I('gallery_id');      // 图片目录
+        $gallery_id  = I('gallery_id');      // 图片目录
         $pic_rate    = (int)I('pic_rate');        // 图片比
         $pro_rate    = (int)I('pro_rate');        // 产品比
         $re_date     = I('re_date');         // 可重复使用时间
