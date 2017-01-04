@@ -128,7 +128,6 @@ return [
 
         'ProductInfo'   => [
             'insert/info'  => [
-                'GetGlobalID/get_form_number',
                 'GetGlobalID/getSysId',
                 'ProductInfo/product_AutoFill',
                 'ProductInfo/receiveValue',
@@ -146,7 +145,6 @@ return [
                 'Picture/pic_upload_paration',
                 'Picture/marry_pic',
                 'ProductInfoExtend/dataCommit',
-                'Test/test',
             ],
             'edit/info'  => [
                 'ProductInfo/rollbackProduct',

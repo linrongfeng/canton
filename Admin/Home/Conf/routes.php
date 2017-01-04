@@ -15,17 +15,18 @@ return [
         'logout'  => 'Login/logout', // 登陆
 
         // Subarea
-		'get/table'              => 'Subarea/getAllTable',    // 获取所有没有分区的表
-        'get/zone'               => 'Subarea/getTable',       // 获取已经分区的所有表
-        'get/fields'             => 'Subarea/getFields',      // 获取数据表的字段
-        'establish/partition'    => 'Subarea/setSubarea',     // 为表创建分区
-        'dilatation/partition'   => 'Subarea/Dilatation',     // 分区扩容
-        'update/partition'       => 'Subarea/updateSubarea',  // 修改分区
-        'check'                  => 'Subarea/check',          // 检测分区的情况（是否可以提交，提交是否成功等）
-        'qingchu'                => 'Subarea/Eliminate',      // 分区出现失误时，清除缓存，重新使用
-        'get/tablecount'         => 'Subarea/getTableCount',  // 获取每张表的数据统计
+		'get/table'              => 'Subarea/getAllTable',    //获取所有没有分区的表
+        'get/zone'               => 'Subarea/getTable',       //获取已经分区的所有表
+        'get/fields'             => 'Subarea/getFields',      //获取数据表的字段
+        'establish/partition'    => 'Subarea/setSubarea',     //为表创建分区
+        'dilatation/partition'   => 'Subarea/Dilatation',     //分区扩容
+        'update/partition'       => 'Subarea/updateSubarea',  //修改分区
+        'check'                  => 'Subarea/check',          //检测分区的情况（是否可以提交，提交是否成功等）
+        'qingchu'                => 'Subarea/Eliminate',      //分区出现失误时，清除缓存，重新使用
+        'get/tablecount'         => 'Subarea/getTableCount',  //获取每张表的数据统计
 
         // GetGlobalID
+        'get/formNumber'         => 'GetGlobalID/get_form_number',
         'get/sysId'              => 'GetGlobalID/getSysId',
 
         // Custom
@@ -66,14 +67,14 @@ return [
         'get/productcenter'      => 'ProductCenter/getProductCenterInfo',//获取产品中心产品信息接口
         'delete/productcenter'   => 'ProductCenter/delProductCenter',    //删除产品中心产品信息接口
         'upload/productcenter'   => 'ProductCenter/uploadProductCenter', //上传文件读取数据
-        'get/product2value'      => 'ProductCenter/getProduct2Value',    //获取已经关联了词库的产品
+        'get/product2value'      => 'ProductCenter/getProduct2Value',    //上传文件读取数据
 
         // ProductInfo
-        'autofill/product'       => 'ProductInfo/product_AutoFill',     // 自动填写资料表
-        'receive/value'          => 'ProductInfo/receiveValue',         // 接收匹配完成的图片与词库内容
+        'autofill/product'       => 'ProductInfo/product_AutoFill',     //自动填写资料表
+        'receive/value'          => 'ProductInfo/receiveValue',         //接收匹配完成的图片与词库内容
         'fill/batch'             => 'ProductInfo/batch_info',           // 自动填充产品批量表数据
         'get/completeInfo'       => 'ProductInfo/getFormInfo',          // 图片上传完服务器之后返回数据保存图片地址
-        'data/check'             => 'ProductInfo/dataCheck',            // 数据检查
+        'data/check'             => 'ProductInfo/dataCheck',            //数据检查
         'update/check_msg'       => 'ProductInfo/update_check_msg',     // 获取检查出错误的数据
         'update/checkinfo'       => 'ProductInfo/update_info',          // 调取检查出错误的数据
         'rollback/checkinfo'     => 'ProductInfo/rollbackProduct',      // 资料表撤销返回
@@ -87,8 +88,8 @@ return [
         'back'                   => 'ProductInfo/back_step',
         'delete/product'         => 'ProductInfo/del_product',
         'view/info'              => 'ProductInfo/get_five',
-        'search/batchTel'        => 'ProductInfo/GetBatchTel',           // 搜索与资料表关联的批量表模板
-        'set/excel'              => 'ProductInfo/makeExcel',             // 生成批量表excel文件
+        'search/batchTel'        => 'ProductInfo/GetBatchTel',           //搜索与资料表关联的批量表模板
+        'set/excel'              => 'ProductInfo/makeExcel',             //生成批量表excel文件
 
         // ProductInfoForm
         'search/form'            => 'ProductInfoForm/search_form',       // 表格搜索
@@ -108,7 +109,6 @@ return [
         'get/upc'                => 'Upc/get_upc_list',
         'use/upc'                => 'Upc/use_upc',
         'marry_upc'              => 'Upc/marry_upc',
-        'unlock/upc'             => 'Upc/unLockUpc',      // upc解锁
 
         //Category
         'get/ancestors'          => 'Category/getAncestors',
@@ -177,7 +177,7 @@ return [
         'get/linkage'            => 'Template/getLinkage',
         'vague/templatename'     => 'Template/vagueName',
         'get/template10'         => 'Template/get_template_by_category',
-        'get/temvalue'           => 'Template/getitemValue',            //获取模板数据，可以获取全部也可以模糊获取
+        'get/temvalue'           => 'Template/getitemValue',         //获取模板数据，可以获取全部也可以模糊获取
 
         // CenterItem
         'add/centeritem'         => 'CenterItem/addCenterItem',         //添加词库项目
@@ -222,9 +222,9 @@ return [
         'get/rule2role'          => 'Roles/getRule2Role',//读取角色的权限
         'allot/rule2role'        => 'Roles/allotRule2Role',//给角色分配权限
 
+
         'get/temformat'          => 'ProductInfoExtend/getTemFormat',//获取模板的数据格式
         'commit/data'            => 'ProductInfoExtend/dataCommit',//暂存
-
         'upload/pic'             => 'Picture/uploadPic',//上传图片
         'get/progress'           => 'Picture/getProgress',//获取上传图片的进度
         'copy/datas'             => 'TestCaseOperation/copyDatas',//复制数据做测试
@@ -234,6 +234,6 @@ return [
         'edit/personal'          => 'Ucenter/userEdit',                 // 普通用户编辑权限
         'usernav'                => 'Ucenter/navManage',                // 普通用户编辑权限
         'get/userbyid'           => 'Ucenter/getUserInfoById',             // 查询用户
-
+        'get/formname'           => 'Ucenter/GetFormMsg',             // 查询用户
     ],
 ];

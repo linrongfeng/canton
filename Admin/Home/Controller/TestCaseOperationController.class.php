@@ -223,11 +223,11 @@ class TestCaseOperationController extends RestController{
 			$where['app_code2'] = 'TG';
 			$where['data2_id'] = $id;
 			$del = $data_constraint->where($where)->delete();
-			//删除表格
-			$sql = $form->where("id=%d",array($id))->delete();
 			$upc_data['form_id'] = 0;
 			$upc_data['locked'] = 0;
 			$upc_sql = M('product_upc_code')->data($upc_data)->where("form_id=%d",array($id))->save();
+			//删除表格
+			$sql = $form->where("id=%d",array($id))->delete();
 			if($sql === 'flase'){
 				$info->rollback();
 				return -1;

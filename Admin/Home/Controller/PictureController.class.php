@@ -482,7 +482,8 @@ class PictureController extends BaseController
     // 上传图片到图片空间接口
     // @param form_id 表格id
     // @param picCount 图片总数
-    public function uploadPic(){
+    public function uploadPic()
+    {
         set_time_limit(0);
         $form_id   = I('post.form_id');
         $countPic  = I('post.picCount');
