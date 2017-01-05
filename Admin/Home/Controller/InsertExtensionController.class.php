@@ -241,7 +241,7 @@ class InsertExtensionController extends RestController
         //写入文件的地址与名称
         $time = "info".time();
         $myfile = fopen("./public/data/".$time.".txt", "w") or die("Unable to open file!");
-        
+
         if(empty($variant_num)){//没有变体的自动填表
             
             for($i = 0 ;$i < $product_count; $i++){
@@ -903,15 +903,13 @@ class InsertExtensionController extends RestController
             $da['product_id'] = $id[$q];
             $da['created_time'] = date('Y-m-d H:i:s',time());
             $query11 = $form_info->add($da);
-        }
-        foreach ($id as $qvalue) {
             $datas['interger_value'] = $valss;
-            $info->data($datas)->where("interger_value = %d and product_id = %d",array(0,$qvalue))->save();
+            $info->data($datas)->where("interger_value = %d and product_id = %d",array(0,$id[$q]))->save();
             $das['decimal_value'] = $valss;
-            $info->data($das)->where("decimal_value = %d and product_id = %d",array(0.00,$qvalue))->save();
+            $info->data($das)->where("decimal_value = %d and product_id = %d",array(0.00,$id[$q]))->save();
         }
-        
         $info->commit(); 
+        unlink("./public/data/".$time.".txt");
         $arr['status'] = 100;
         $this->response($arr,'json'); 
 	}
