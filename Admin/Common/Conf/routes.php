@@ -235,7 +235,5 @@ return [
         'usernav'                => 'Ucenter/navManage',                // 普通用户编辑权限
         'get/userbyid'           => 'Ucenter/getUserInfoById',             // 查询用户
 
-        //mysql 大数据添加新方法
-        'table/automatic'        => 'InsertExtension/tableAutomatic',
     ],
 ];

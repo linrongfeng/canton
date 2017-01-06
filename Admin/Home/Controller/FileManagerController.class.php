@@ -109,8 +109,6 @@ class FileManagerController extends BaseController
         //传回的url参数是否为数组
 		if(is_array($url))
         {
-        	$success = 0;
-        	$fail = 0;
 			foreach ($url as $key => $value)
             {
 				if(is_dir($value))
@@ -122,20 +120,15 @@ class FileManagerController extends BaseController
                     // 判断文件是否存在 函数里面的参数是必选项！！！
 					if(file_exists($value))
                     {
-						if(unlink($value)){
-							$success++;
-						}else{
-							$fail++;
-						}
+						unlink($value);
 					} else {
 						$arr['status'] = 102;
 						$arr['msg']    = "文件不存在！";
 						$this->response($arr);
 					}
+
 				}
 			}
-			$arr['success'] = $success;
-			$arr['fail'] = $fail;
 		} else {
 			if(is_dir($url))
             {
