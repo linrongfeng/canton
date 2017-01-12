@@ -549,19 +549,20 @@ class PictureController extends BaseController
             $where['path'] = '.'.pathinfo($url,PATHINFO_DIRNAME);
             $where['file_name'] = $tmpName;
             $sql = $picture->field('id,gallery_id')->where($where)->find();
-            // $res = json_decode(imageCheck($sql['id'],$sql['gallery_id'],$valu['ids']),true);
-            // if($res['status'] == 100){
-            //     foreach ($res['value'] as $rekey => $re_value) {
-            //         $data[$i]['id'] = $re_value['ids'];
-            //         $data[$i]['image_url'] = $re_value['image_url'];
-            //         $data[$i]['photo'] = $valu['image_url'];
-            //         $data[$i]['status_msg'] = $re_value['status_msg'];
-            //         $i++;
-            //     }
-            //     $success++;
-            // }else{
+            $categoryid = M('product_gallery')->field('category_id')->where("id=%d",array($sql['gallery_id']))->find();
+            $res = json_decode(imageCheck($sql['id'],$categoryid['category_id'],$valu['ids']),true);
+            if($res['status'] == 100){
+                foreach ($res['value'] as $rekey => $re_value) {
+                    $data[$i]['id'] = $re_value['ids'];
+                    $data[$i]['image_url'] = $re_value['image_url'];
+                    $data[$i]['photo'] = $valu['image_url'];
+                    $data[$i]['status_msg'] = $re_value['status_msg'];
+                    $i++;
+                }
+                $success++;
+            }else{
                 //执行上传
-                $re = json_decode(imageUpload( $tmpName, $tmpFile, $tmpType, $form_id, $valu['ids'],$valu['num'],$sql['id']),true);
+                $re = json_decode(imageUpload( $tmpName, $tmpFile, $tmpType, $form_id, $valu['ids'],$valu['num'],$categoryid['category_id'],$sql['id']),true);
                 if($re['status'] == 100){
                     foreach ($re['value'] as $rekey => $re_value) {
                         $data[$i]['id'] = $re_value['ids'];
@@ -582,7 +583,7 @@ class PictureController extends BaseController
                     }
                     $error++;
                 }
-            //}
+            }
             
             $cache = S('PicProgress_'.$form_id);
             if(empty($cache['num'])){

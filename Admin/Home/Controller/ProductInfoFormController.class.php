@@ -635,6 +635,9 @@ class ProductInfoFormController extends BaseController
                     }
                     $pid[] = $btproduct_id[$j];
                     $j++;
+                    if($j > $all_product-1){
+                        break 2;
+                    }
                 }
 
             }
