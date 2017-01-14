@@ -670,24 +670,10 @@ class ProductInfoFormController extends BaseController
         // 拉参数
 		$type_code             = I('post.type_code');
 		$id                    = (int)I('post.id');
-		$data['category_id']   = (int)I('post.category_id');
-		$data['template_id']   = (int)I('post.template_id');
-		$data['client_id']     = isset($_COOKIE["user_id"]) ? cookie("user_id") : 0;
 		$data['title']         = I('post.title');
 		$data['modified_time'] = date('Y-m-d H:i:s',time());
-		$data['site_name']     = I('post.site_name');
         if($type_code != 'info' && $type_code != 'batch') $this->response(['status'=> 119, 'msg' => '系统错误']);
 		if($id == 0) $this->response(['status'=> 102, 'msg' => '未选择表格']);
-		if($data['category_id'] == 0) $this->response(['status'=> 103, 'msg' => '未选择产品类目']);
-		if($data['template_id'] == 0) $this->response(['status'=> 104, 'msg' => '未选择模板']);
-
-		if($type_code == 'batch'){
-			if(empty($data['site_name'])) $this->response(['status'=> 102, 'msg' => '请选择站点']);
-		}
-		
-		if(empty($data['client_id']) || !preg_match("/^[0-9]*$/",$data['template_id'])){
-			$data['client_id'] = 1;
-		}
 		if(empty($data['title'])){//判断表单名称是否为空
 			$array['status'] = 105;
             $array['msg']    = '表格为必填';
