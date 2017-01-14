@@ -206,20 +206,20 @@ class InsertExtensionController extends BaseController
                     if(!empty($priceUsd1) && !empty($priceUsd2)){//规则中的Price (USD)有值
                         $price = rand($priceUsd1,$priceUsd2);
                         $decimal  = rand(1,99) / 100;
-                            //$usd_where['product_id'] = $qvalue['product_id'];
-                            $usd_where['parent_id'] = $sel_value['id'];
-                            $usd_where['title'] = 'Price (USD)';
-                            $usd_data['decimal_value'] = $price+$decimal;
-                            $usd_data['char_value'] = $price+$decimal;
-                            $usd_upda = $info->data($usd_data)->where($usd_where)->save();
+                        //$usd_where['product_id'] = $qvalue['product_id'];
+                        $usd_where['parent_id'] = $sel_value['id'];
+                        $usd_where['title'] = 'Price (USD)';
+                        $usd_data['decimal_value'] = $price+$decimal;
+                        $usd_data['char_value'] = $price+$decimal;
+                        $usd_upda = $info->data($usd_data)->where($usd_where)->save();
 
-                            //$gbp_where['product_id'] = $qvalue['product_id'];
-                            $gbp_where['parent_id'] =  $sel_value['id'];
-                            $gbp_where['title'] = "Price (GBP)";
-                            $gbp_data['decimal_value'] = $price-1+$decimal;
-                            $gbp_data['char_value'] = $price-1+$decimal;
-                            $gbp_upda = $info->data($gbp_data)->where($gbp_where)->save();
-                        }
+                        //$gbp_where['product_id'] = $qvalue['product_id'];
+                        $gbp_where['parent_id'] =  $sel_value['id'];
+                        $gbp_where['title'] = "Price (GBP)";
+                        $gbp_data['decimal_value'] = $price-1+$decimal;
+                        $gbp_data['char_value'] = $price-1+$decimal;
+                        $gbp_upda = $info->data($gbp_data)->where($gbp_where)->save();
+                    }
                 }
             }
             
