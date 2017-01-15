@@ -399,9 +399,7 @@ class ProductInfoForm{
 	 			$form->rollback();
 	 			return -1;
 	 		}			
-		}
-
- 			
+		}	
  	}
 
  	/*
