@@ -496,6 +496,8 @@ class PictureController extends BaseController
         set_time_limit(0);
         $form_id   = I('post.form_id');
         $countPic  = I('post.picCount');
+        $nums       = I('post.nums');
+        $count     = I('post.count');
         $text      = file_get_contents("php://input");
         $textdata  = urldecode($text);
         $num = ceil($countPic / 50);
@@ -596,23 +598,23 @@ class PictureController extends BaseController
             
             $cache = S('PicProgress_'.$form_id);
             if(empty($cache['num'])){
-                $das['count'] = $countPic;
-                $das['num'] = $valu['num'];
+                $das['num'] = $nums+1;
                 S('PicProgress_'.$form_id,$das);
             }else{
-                $das['count'] = $countPic;
-                $das['num'] = $valu['num'] + $cache['num'];
+                $das['num'] = $nums+1;
                 S('PicProgress_'.$form_id,$das);
             }
+            $num = ($das['num'] / $count)*100;
+            $progress = sprintf("%.2f", $num).'%';
         }
         $picture->commit();
-        if(empty($success)){
-            $array['status'] = 101;
-        }else{
+        // if(empty($success)){
+        //     $array['status'] = 101;
+        // }else{
             $array['status'] = 100;
-            S('PicProgress_'.$form_id,null);
             $array['value'] = $data;
-        }
+            $array['progress'] = $progress;
+        // }
         $this->response($array);
     }
 
