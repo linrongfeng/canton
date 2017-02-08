@@ -27,14 +27,13 @@ class UpcController extends BaseController
         );
         $same_upc = 0;  // 已经存在的upc
         $inserted = 0;  // 录入成功的upc
+
         $handle = @fopen($file, "r");
         if ($handle) {
             while (!feof($handle)) {
                 $buffer = fgets($handle); // 逐行读取upc
                 $v = trim($buffer);
-                // $this->response($v);
                 if(preg_match("/^\d{12,13}\b/", trim($v))){
-                    
                     $isset = $u->where("upc_code='$v'")->find(); // 查询upc是否已经存在
                     if($isset){
                         $same_upc += 1;
@@ -57,7 +56,6 @@ class UpcController extends BaseController
             $u->rollback();
             $data['status'] = 105; // upc非法
             $data['msg']    = 'UPC非法';
-            $data['vlaue']  = $buffer;
             $this->response($data);
         }else{
             $u->commit();

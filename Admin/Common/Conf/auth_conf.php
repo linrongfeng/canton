@@ -178,6 +178,10 @@ return [
                 'ProductInfoForm/addInfoForm',
                 'GetGlobalID/get_form_number',
             ],
+            'transfer/form'  => [
+                'ProductInfoForm/transferForm',
+                'Custom/TransformSearchCustomer',
+            ],
         ],
 
         'Category' => [

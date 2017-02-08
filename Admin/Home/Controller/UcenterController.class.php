@@ -200,7 +200,7 @@ class UcenterController extends RestController
             $where['operation_id'] = $operationId;
             $id =  M('user_restrict')->field("uid")->where($where)->find();
             $name =  M('auth_user')->field("username")->where("id=%d",array($id['uid']))->find();
-            $this->response(['status' => 101 ,'msg' => '有同事'.$name['username'].'正在操作该数据']);
+            $this->response(['status' => 101 ,'msg' => '有同事正在操作该数据']);
         }
     }
 
