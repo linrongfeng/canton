@@ -41,14 +41,14 @@ class traverseDir{
   $zipname=date('YmdHis',time());
   // return $this->savepath;
   if (!file_exists($zipname)){
-   $zip->open($this->savepath.$zipname.'.zip',\ZipArchive::OVERWRITE);//创建一个空的zip文件
-   if(is_array($items)){
+    $zip->open($this->savepath.$zipname.'.zip',\ZipArchive::OVERWRITE);//创建一个空的zip文件
+    if(is_array($items)){
       foreach ($items as $key => $value) {
-     $zip->addFile($this->currentdir.'/'.$value,$value);
-    }
-   }else{
+        $zip->addFile($this->currentdir.'/'.$value,$value);
+      }
+    }else{
       $zip->addFile($this->currentdir.'/'.$items,$items);
-   }
+    }
    $zip->close();
    return $this->savepath.'/'.$zipname.'.zip';
    // $dw=new download($zipname.'.zip',$this->savepath); //下载文件
@@ -86,19 +86,19 @@ class download{
  public function getfiles(){
   //检查文件是否存在
   if (file_exists($this->_filepath)){
-   //打开文件
-   //$file = fopen($this->_filepath,"r"); 
-   ob_end_clean();
-   header('Content-Description: File Transfer');    
-Header("content-type:application/x-zip-compressed");  
-header('Content-Disposition: attachment; filename='.basename($this->_filepath));     
-header('Content-Transfer-Encoding: binary');     
-header('Expires: 0');     
-header('Cache-Control: must-revalidate, post-check=0, pre-check=0');     
-header('Pragma: public');     
-header('Content-Length: ' . filesize($this->_filepath));     
-ob_clean();   //清空但不关闭输出缓存 
-@readfile($this->_filepath);
+  //打开文件
+  //$file = fopen($this->_filepath,"r"); 
+  ob_end_clean();
+  header('Content-Description: File Transfer');    
+  Header("content-type:application/x-zip-compressed");  
+  header('Content-Disposition: attachment; filename='.basename($this->_filepath));     
+  header('Content-Transfer-Encoding: binary');     
+  header('Expires: 0');     
+  header('Cache-Control: must-revalidate, post-check=0, pre-check=0');     
+  header('Pragma: public');     
+  header('Content-Length: ' . filesize($this->_filepath));     
+  ob_clean();   //清空但不关闭输出缓存 
+  @readfile($this->_filepath);
  
 
 

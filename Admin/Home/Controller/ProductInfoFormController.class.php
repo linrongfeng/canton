@@ -702,9 +702,16 @@ class ProductInfoFormController extends BaseController
 		if($data['category_id'] == 0) $this->response(['status'=> 103, 'msg' => '未选择产品类目']);
 		if($data['template_id'] == 0) $this->response(['status'=> 104, 'msg' => '未选择模板']);
 
+        $m = M('product_form');
 		if($type_code == 'batch'){
+            $m = M('product_batch_form');
 			if(empty($data['site_name'])) $this->response(['status'=> 102, 'msg' => '请选择站点']);
 		}
+
+        $moveCkeck = $this->model->CheckMoveFormAuth($this->loginid ,$id ,$m);
+        if(!$moveCkeck){
+            $this->response(['status'=> 105, 'msg' => '抱歉，您不能操作当前表格']);
+        }
 	
 		if(empty($data['title'])){//判断表单名称是否为空
 			$array['status'] = 105;
@@ -737,6 +744,16 @@ class ProductInfoFormController extends BaseController
 			$data['status'] = 102;
             $data['msg']    = '未选择表格';
 		}else{
+            if($type_code == 'info'){
+                $m = M('product_form');
+            }else{
+                $m = M('product_batch_form');
+            }
+
+            $moveCkeck = $this->model->CheckMoveFormAuth($this->loginid ,$id ,$m);
+            if(!$moveCkeck){
+                $this->response(['status'=> 105, 'msg' => '抱歉，您不能操作当前表格']);
+            }
 			$res = \Think\Product\ProductInfoForm::DelInfoForm($type_code,$id);
 			if($res == 1){
 				$data['status'] = 100;
