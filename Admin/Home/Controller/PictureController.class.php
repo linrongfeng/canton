@@ -460,7 +460,7 @@ class PictureController extends BaseController
         foreach($p_id as $v){
             $p[] = $v['product_id'];
         }
-        
+
         $result = [];
         // 查图片
         foreach ($p as $key => $value) {
@@ -503,7 +503,7 @@ class PictureController extends BaseController
         $num = ceil($countPic / 50);
         $i = 0;
         $success = 0;
-        $error = 0; 
+        $error = 0;
         $j = 0;
         $s = 0;
         $n = 0;
@@ -571,7 +571,7 @@ class PictureController extends BaseController
                     $i++;
                 }
                 $success++;
-            }elseif($res['status'] == 102){
+            }else{
                 //执行上传
                 $re = json_decode(imageUpload( $tmpName, $tmpFile, $tmpType, $form_id, $valu['ids'],$valu['num'],$categoryid['category_id'],$sql['id']),true);
                 if($re['status'] == 100){
@@ -594,14 +594,8 @@ class PictureController extends BaseController
                     }
                     $error++;
                 }
-            }else{
-                $data[$i]['status_msg'] = '';
-                $data[$i]['msg'] = $re['msg'];
-                $data[$i]['ids'] = $id_value;
-                $data[$i]['photo'] = $valu['image_url'];
-                $data[$i]['image_url'] = $valu['image_url'];
             }
-            
+
             $cache = S('PicProgress_'.$form_id);
             if(empty($cache['num'])){
                 $das['num'] = $nums+1;
@@ -617,136 +611,12 @@ class PictureController extends BaseController
         // if(empty($success)){
         //     $array['status'] = 101;
         // }else{
-            $array['status'] = 100;
-            $array['value'] = $data;
-            $array['progress'] = $progress;
+        $array['status'] = 100;
+        $array['value'] = $data;
+        $array['progress'] = $progress;
         // }
         $this->response($array);
     }
-    // public function uploadPic()
-    // {
-    //     set_time_limit(0);
-    //     $form_id   = I('post.form_id');
-    //     $countPic  = I('post.picCount');
-    //     $text      = file_get_contents("php://input");
-    //     $textdata  = urldecode($text);
-    //     $num = ceil($countPic / 50);
-    //     $i = 0;
-    //     $success = 0;
-    //     $error = 0; 
-    //     $j = 0;
-    //     $s = 0;
-    //     $n = 0;
-    //     for($z = 0; $z < $num; $z ++) {                     // 分包获取传的产品数量
-    //         $b = stripos($textdata, 'picArr[' . $j . ']');
-    //         $j = $j + 50;
-    //         $c = stripos($textdata, 'picArr[' . $j . ']');
-    //         if (empty($c)) {
-    //             $g = substr($textdata, $b);
-    //         } else {
-    //             $g = substr($textdata, $b, $c - $b - 1);
-    //         }
-    //         parse_str($g);
-    //         $pic_data[] = $picArr;
-    //         $picArr = array();
-    //     }
-
-    //     $pic = array();
-    //     foreach($pic_data as $val){  // 将接收到的多个数据包组合成一个
-    //         foreach($val as $vs){
-    //             $pic[] = $vs;
-    //         }
-    //     }
-    //     foreach ($pic as $keys => $values) {
-    //         foreach ($pic as $k => $vals) {
-    //             if($values['image_url'] == $vals['image_url']){
-    //                 $arrs[$n]['ids'][] = $vals['ids'];
-    //                 $arrs[$n]['image_url'] = $vals['image_url'];
-    //                 unset($pic[$k]);
-    //                 $s++;
-    //             }
-    //         }
-    //         $arrs[$n]['num'] = $s;
-    //         $s = 0;
-    //         $n++;
-    //     }
-    //     foreach ($arrs as $ks => $va) {
-    //         if(!empty($va['image_url'])){
-    //             $arrays[] = $va;
-    //         }
-    //     }
-    //     $picture = M('product_picture');
-    //     $picture->startTrans();
-    //     S('PicProgress_'.$form_id,null);
-    //     foreach ($arrays as $key => $valu) {
-    //         $qian = array('http://',$_SERVER['HTTP_HOST'],__ROOT__);
-    //         $hou = array('','','');
-    //         $url = str_replace($qian,$hou,$valu['image_url']);
-    //         $tmpFile = '.'.$url;
-    //         $tmpName = pathinfo($valu['image_url'],PATHINFO_BASENAME);
-    //         $tmpType = pathinfo($valu['image_url'],PATHINFO_EXTENSION);
-    //         \Think\Log::record("图片大小:".ceil(filesize($tmpFile) / 1000) . "k",'DEBUG',true);
-
-    //         $where['path'] = '.'.pathinfo($url,PATHINFO_DIRNAME);
-    //         $where['file_name'] = $tmpName;
-    //         $sql = $picture->field('id,gallery_id')->where($where)->find();
-    //         $categoryid = M('product_gallery')->field('category_id')->where("id=%d",array($sql['gallery_id']))->find();
-    //         $res = json_decode(imageCheck($sql['id'],$categoryid['category_id'],$valu['ids']),true);
-    //         if($res['status'] == 100){
-    //             foreach ($res['value'] as $rekey => $re_value) {
-    //                 $data[$i]['id'] = $re_value['ids'];
-    //                 $data[$i]['image_url'] = $re_value['image_url'];
-    //                 $data[$i]['photo'] = $valu['image_url'];
-    //                 $data[$i]['status_msg'] = $re_value['status_msg'];
-    //                 $i++;
-    //             }
-    //             $success++;
-    //         }else{
-    //             //执行上传
-    //             $re = json_decode(imageUpload( $tmpName, $tmpFile, $tmpType, $form_id, $valu['ids'],$valu['num'],$categoryid['category_id'],$sql['id']),true);
-    //             if($re['status'] == 100){
-    //                 foreach ($re['value'] as $rekey => $re_value) {
-    //                     $data[$i]['id'] = $re_value['ids'];
-    //                     $data[$i]['image_url'] = $re_value['image_url'];
-    //                     $data[$i]['photo'] = $valu['image_url'];
-    //                     $data[$i]['status_msg'] = $re_value['status_msg'];
-    //                     $i++;
-    //                 }
-    //                 $success++;
-    //             }else{
-    //                 foreach ($valu['ids'] as $id_key => $id_value) {
-    //                     $data[$i]['status_msg'] = '';
-    //                     $data[$i]['msg'] = $re['msg'];
-    //                     $data[$i]['ids'] = $id_value;
-    //                     $data[$i]['photo'] = $valu['image_url'];
-    //                     $data[$i]['image_url'] = $valu['image_url'];
-    //                     $i++;
-    //                 }
-    //                 $error++;
-    //             }
-    //         }
-            
-    //         $cache = S('PicProgress_'.$form_id);
-    //         if(empty($cache['num'])){
-    //             $das['count'] = $countPic;
-    //             $das['num'] = $valu['num'];
-    //             S('PicProgress_'.$form_id,$das);
-    //         }else{
-    //             $das['count'] = $countPic;
-    //             $das['num'] = $valu['num'] + $cache['num'];
-    //             S('PicProgress_'.$form_id,$das);
-    //         }
-    //     }
-    //     $picture->commit();
-    //     if(empty($success)){
-    //         $array['status'] = 101;
-    //     }else{
-    //         $array['status'] = 100;
-    //         S('PicProgress_'.$form_id,null);
-    //         $array['value'] = $data;
-    //     }
-    //     $this->response($array);
-    // }
 
     //图片上传进度
     // @param form_id 表格id

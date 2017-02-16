@@ -88,6 +88,7 @@ class AuthModel extends Model
         foreach($role as $rv){
             if($rv['role_id'] == 2 || $rv['role_id'] == 5) return true;
         }
+
         $form = $table->where("id = $form_id")->find();
         if(!$form) return false;
         $whoseForm = $form['creator_id'];
@@ -97,6 +98,7 @@ class AuthModel extends Model
         if($user['is_head'] != 1 && $whoseForm == $uid) {
             return true;
         }
+
         if($user['is_head'] == 1){
             $users = M()->query("SELECT user_id FROM `tbl_auth_role_user` WHERE role_id = (SELECT role_id FROM `tbl_auth_role_user` WHERE user_id = $uid LIMIT 1)");
             foreach ($users as $v){
