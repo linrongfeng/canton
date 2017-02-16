@@ -571,7 +571,7 @@ class PictureController extends BaseController
                     $i++;
                 }
                 $success++;
-            }else{
+            }elseif($res['status'] == 102){
                 //执行上传
                 $re = json_decode(imageUpload( $tmpName, $tmpFile, $tmpType, $form_id, $valu['ids'],$valu['num'],$categoryid['category_id'],$sql['id']),true);
                 if($re['status'] == 100){
@@ -594,6 +594,12 @@ class PictureController extends BaseController
                     }
                     $error++;
                 }
+            }else{
+                $data[$i]['status_msg'] = '';
+                $data[$i]['msg'] = $re['msg'];
+                $data[$i]['ids'] = $id_value;
+                $data[$i]['photo'] = $valu['image_url'];
+                $data[$i]['image_url'] = $valu['image_url'];
             }
             
             $cache = S('PicProgress_'.$form_id);
